@@ -183,11 +183,12 @@ ORDER BY id ASC;
 
 ```
 .env (Secrets)
+.env.example
 .gitignore
-generate_test_suite.py
 index_documents.py
 README.md
 tests/
+    generate_test_suite.py
     test_1_prose.docx
     test_1_prose.pdf
     test_2_config.docx
