@@ -133,17 +133,17 @@ The database tables and `pgvector` extension are initialized automatically.
 
 - **C. Paragraph Chunking (PDF):**
   ```sh
-  python index_documents.py --file test_2_config.pdf --strategy "paragraph-based splitting"
+  python index_documents.py --file tests/test_2_config.pdf --strategy "paragraph-based splitting"
   ```
 
 - **D. Sentence Chunking (DOCX):**
   ```sh
-  python index_documents.py --file test_4_edge_cases.docx --strategy "sentence-based splitting"
+  python index_documents.py --file tests/test_4_edge_cases.docx --strategy "sentence-based splitting"
   ```
 
 - **E. Fixed-Size Sliding Window (PDF):**
   ```sh
-  python index_documents.py --file test_1_prose.pdf --strategy "fixed-size with overlap" --chunk-size 150 --overlap 30
+  python index_documents.py --file tests/test_1_prose.pdf --strategy "fixed-size with overlap" --chunk-size 150 --overlap 30
   ```
 
 ---
@@ -184,17 +184,21 @@ ORDER BY id ASC;
 ```
 .env (Secrets)
 .gitignore
-generate_test_suite.py (Generate test files)
+generate_test_suite.py
 index_documents.py
 README.md
-test_1_prose.docx
-test_1_prose.pdf
-test_2_config.docx
-test_2_config.pdf
-test_3_bullets.docx
-test_3_bullets.pdf
-test_4_edge_cases.docx
-test_4_edge_cases.pdf
-test_5_mixed_report.docx
-test_5_mixed_report.pdf
+tests/
+    test_1_prose.docx
+    test_1_prose.pdf
+    test_2_config.docx
+    test_2_config.pdf
+    test_3_bullets.docx
+    test_3_bullets.pdf
+    test_4_edge_cases.docx
+    test_4_edge_cases.pdf
+    test_5_mixed_report.docx
+    test_5_mixed_report.pdf
+```
+
+- All test documents and test-related files are now located in the `tests/` directory.
 ```
