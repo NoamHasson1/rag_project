@@ -1,0 +1,14 @@
+# Environment Variables (Sensitive Data)
+.env
+
+# Python Virtual Environment
+venv/
+env/
+Y/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Operating System Artifacts (Mac)
+.DS_Store
