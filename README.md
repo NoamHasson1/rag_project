@@ -26,12 +26,13 @@ A production-ready Python module to **extract, clean, partition, and embed** tex
 
 ## ⚡ Quick Start Guide
 
-Follow these steps to get the pipeline running in **less than 2 minutes**.
+Follow these steps to get the pipeline running in **less than 2 minutes**. You will use these credentials later, so keep them (Gemini API Key and PostgreSQL Connection String).
 
 ### 1. Obtain API Keys & Connection Strings
 
 - **Google Gemini API Key:**  
   - Go to Google AI Studio, click "Get API Key", and generate a free key.
+  https://aistudio.google.com/api-keys
 - **PostgreSQL Connection String:**  
   - Use [Neon](https://neon.tech/) or any PostgreSQL provider.  
   - Example:  
@@ -43,8 +44,9 @@ Follow these steps to get the pipeline running in **less than 2 minutes**.
 
 ### 2. Clone and Enter the Project
 
+- from the terminal 
 ```sh
-git clone <your-github-repository-url>
+git clone <this-github-repository-url>
 cd RAG_PROJECT
 ```
 
@@ -101,7 +103,7 @@ copy .env.example .env
 Copy-Item .env.example .env
 ```
 
-Open `.env` in a text editor and paste your credentials:
+Open `.env` in a text editor and paste your credentials from the begining:
 ```
 GEMINI_API_KEY=AIzaSyYourActualGoogleGeminiApiKeyHere
 POSTGRES_URL=postgresql://neondb_owner:your_password@your-endpoint.neon.tech/neondb?sslmode=require
@@ -116,7 +118,7 @@ The database tables and `pgvector` extension are initialized automatically.
 **Examples:**
 
 - **A. Running on Your Own Custom File (Recommended for Grading):**
-  1. Place your `.pdf` or `.docx` file inside the project directory (e.g., `my_document.pdf`).
+  1. Place your `.pdf` or `.docx` file inside the project directory at the root (e.g., `my_document.pdf`).
   2. Run the script pointing to your file with your preferred strategy:
      ```sh
      python index_documents.py --file my_document.pdf --strategy "sentence-based splitting"
@@ -180,12 +182,11 @@ ORDER BY id ASC;
 ## 📁 Project Structure
 
 ```
-.env
+.env (Secrets)
 .gitignore
-generate_test_suite.py
+generate_test_suite.py (Generate test files)
 index_documents.py
 README.md
-sample.pdf
 test_1_prose.docx
 test_1_prose.pdf
 test_2_config.docx
