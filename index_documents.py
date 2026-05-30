@@ -33,6 +33,10 @@ def clean_text(text: str) -> str:
         return ""
     
     text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Replace hidden Unicode spaces (like non-breaking spaces \xa0) with standard spaces
+    text = re.sub(r'[\xa0\u200b\u2003]', ' ', text)
+    
     lines = [line.rstrip() for line in text.split("\n")]
     
     return "\n".join(lines)
@@ -83,14 +87,18 @@ def split_by_fixed_size(text: str, chunk_size: int = 500, overlap: int = 50) -> 
     chunks = []
     if not text:
         return chunks
-        
+
+    clean_continuous = re.sub(r'\s+', ' ', text).strip()
+
     start = 0
-    text_length = len(text)
+    text_length = len(clean_continuous)
     
     while start < text_length:
         # Define the end boundary of the chunk
         end = start + chunk_size
-        chunks.append(text[start:end])
+        chunk = clean_continuous[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
         # Move the window forward, subtracting the overlap to maintain context
         start += (chunk_size - overlap)
         
@@ -117,8 +125,10 @@ def split_by_sentences(text: str) -> list[str]:
         sentences = re.split(sentence_endings, unified_block)
         
         for sentence in sentences:
-            if sentence.strip():
-                chunks.append(sentence.strip())
+            # Clean outer edges and ensure no internal double-spaces survive
+            cleaned_sentence = re.sub(r'\s+', ' ', sentence).strip()
+            if cleaned_sentence:
+                chunks.append(cleaned_sentence)
                 
     return chunks
 
@@ -137,7 +147,7 @@ def split_by_paragraphs(text: str) -> list[str]:
     for para in raw_paragraphs:
         # Clean up internal layout artifacts (like mid-sentence line wraps)
         # by re-joining lines within the same block with a single space
-        cleaned_para = " ".join([line.strip() for line in para.split("\n") if line.strip()])
+        cleaned_para = re.sub(r'\s+', ' ', para).strip()
         
         if cleaned_para:
             chunks.append(cleaned_para)

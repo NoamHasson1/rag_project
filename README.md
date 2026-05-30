@@ -4,6 +4,14 @@ A production-ready Python module to **extract, clean, partition, and embed** tex
 
 ---
 
+## Prerequisites & Requirements
+
+  - **Python Version:** Python `3.10` or higher is strictly recommended.
+  - **Database:** PostgreSQL instance with the `pgvector` extension installed.
+  - **External Access:** Active internet connection to connect to Google's Gemini API endpoints and your remote database instance.
+  - **Required Secrets:** * A valid **Google Gemini API Key** (authorized via Google AI Studio, will be described later).
+  - A valid **PostgreSQL Connection URL** (will be described later).
+
 ## Features
 
 - **Robust Text Extraction:**  
@@ -26,7 +34,7 @@ A production-ready Python module to **extract, clean, partition, and embed** tex
 
 ## ⚡ Quick Start Guide
 
-Follow these steps to get the pipeline running in **less than 2 minutes**. You will use these credentials later, so keep them (Gemini API Key and PostgreSQL Connection String).
+Follow these steps to get the pipeline running. You will use these credentials later, so keep them (Gemini API Key and PostgreSQL Connection String).
 
 ### 1. Obtain API Keys & Connection Strings
 
@@ -34,12 +42,14 @@ Follow these steps to get the pipeline running in **less than 2 minutes**. You w
   - Go to Google AI Studio, log in with any Google account, click the blue "Get API Key" button, and copy your key.
   https://aistudio.google.com/api-keys (Keep this window open so you can easily copy the API Key later).
 - **PostgreSQL Connection String:**  
-  - Use [Neon](https://neon.tech/) or any PostgreSQL provider. If you use [Neon](https://neon.tech/), create a free account, and create a new database.
+  - You can use [Neon](https://neon.tech/) or any PostgreSQL provider. If you use [Neon](https://neon.tech/), create a free account, and create a new database.
   Create an account, click on "New project", give it a name in the "Project name", and choose AWS Europe Central 1 (Frankfurt).
   After that, click the "Dashboard" button on the left side in the top, click and the "Connection string" box and copy the Connection String. It looks like the example.
   - Example:  
     ```
-    postgresql://<user>:<password>@<host>/neondb?sslmode=require
+    postgresql://<user>:<password>@<host>/neondb?sslmode=require 
+    or
+    postgresql://user:password@localhost:____/your_db_name
     ```
 
 ---
@@ -49,7 +59,7 @@ Follow these steps to get the pipeline running in **less than 2 minutes**. You w
 - Open your computer's terminal (called Terminal on macOS/Linux, or Command Prompt / PowerShell on Windows) and paste these commands: 
 ```sh
 # 1. Download the code from GitHub to your computer
-git clone https://github.com/NoamHasson1/rag_project.git
+git clone <repository-url>
 
 # 2. Move your terminal focus inside the project folder
 cd RAG_PROJECT
@@ -87,7 +97,7 @@ venv\Scripts\Activate.ps1
 
 - Now, install the tool's building blocks (libraries that read PDFs, connect to databases, etc.) by running this command:
 ```sh
-pip install pypdf python-docx google-genai psycopg2-binary python-dotenv
+pip install -r requirements.txt
 ```
 ---
 
@@ -97,7 +107,7 @@ The pipeline loads credentials from a local `.env` file (ignored by Git). Becaus
 
 CRITICAL: Make sure your terminal is still located inside the main project directory (RAG_PROJECT) before running the copy commands below.
 
-- Create the file: Run the command for your system to copy our template into a real configuration file:
+- Create a `.env` file in the root directory: let's create te file - Run the command for your system to copy our template into a real configuration file:
 
 **Create your `.env` file:**
 
@@ -128,7 +138,7 @@ Paste your keys: Open the newly created `.env` file with any basic text editor (
 
 ```
 GEMINI_API_KEY=AIzaSyYourActualGoogleGeminiApiKeyHere
-POSTGRES_URL=Paste_Your_Neon_Database_Url_Here
+POSTGRES_URL=Paste_Your_Database_Url_Here
 ```
 
 ---
@@ -136,6 +146,30 @@ POSTGRES_URL=Paste_Your_Neon_Database_Url_Here
 ### 6. Run the Ingestion Script
 
 You are ready! The tool will automatically log into your database, set up the required tables, read the file, and save the data. Just copy and paste one of these examples into your terminal:
+
+**What to expect** 
+
+- Terminal Output:
+
+```text
+=================================================
+Starting pipeline for file: my_document.pdf
+Selected Chunking Strategy: "strategy"
+=================================================
+Connecting and checking Database state...
+[OK] Database connection established and schema verified.
+Extracting raw text from document...
+[OK] Document parsed. Total characters: ___
+Chunking text based on strategy rules...
+[OK] Split text into __ distinct chunk segments.
+-> Generating embeddings and storing __ chunks in database...
+   Progress: _/_ chunks ingested successfully.
+   Progress: _/_ chunks ingested successfully.
+[SUCCESS] All _ chunks saved to database table 'document_chunks'.
+Pipeline execution finished flawlessly.
+Database connection closed gracefully.
+```
+*(Note: The number will vary based on how many text chunks were generated from your document.)*
 
 **Examples:**
 
@@ -208,7 +242,21 @@ What will you see in the results?
 - filename & split_strategy: Keeping track of exactly where this chunk came from and how it was processed.
 ---
 
-## 🛠️ CLI Reference
+## Troubleshooting
+
+- If the pipeline encounters deployment or runtime friction, consult this matrix to resolve issues quickly:
+1. Database Error - Ensure your `POSTGRES_URL` is correct and the database user has permission to create extensions.
+2. Gemini API Error [403] API key not valid - Ensure your .env file name starts with a dot (.env), has no trailing spaces around the equals sign, and that your API key is active.
+3. Vector Dimension Mismatch: psycopg2.errors.InvalidParameterValue: ERROR: vector dimensions must be 768 - This happens if you change the embedding model inside the code script to a different model version while the database table structure was initialized with a strict VECTOR(768) layout constraint.
+
+## Technical Specifications
+
+* **AI Embedding Model:** `gemini-embedding-2`.
+* **Vector Geometry Dimension:** **768** (768 Dense floating-point numerical matrix coordinates per chunk).
+* **Database Storage Instance:**PostgreSQL relational database running the pgvector extension.
+
+
+## CLI Reference
 
 - When running index_documents.py, you can use the following parameters:
 
@@ -228,9 +276,11 @@ What will you see in the results?
 .env.example
 .gitignore
 index_documents.py
+requirements.txt
 README.md
 tests/
     generate_test_suite.py
+    run_all_tests.py
     test_1_prose.docx
     test_1_prose.pdf
     test_2_config.docx
