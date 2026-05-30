@@ -32,9 +32,11 @@ Follow these steps to get the pipeline running in **less than 2 minutes**. You w
 
 - **Google Gemini API Key:**  
   - Go to Google AI Studio, log in with any Google account, click the blue "Get API Key" button, and copy your key.
-  https://aistudio.google.com/api-keys
+  https://aistudio.google.com/api-keys (Keep this window open so you can easily copy the API Key later).
 - **PostgreSQL Connection String:**  
-  - Use [Neon](https://neon.tech/) or any PostgreSQL provider. If you use [Neon](https://neon.tech/), create a free account, and create a new database. Copy the Connection String from your dashboard. It looks like the example.
+  - Use [Neon](https://neon.tech/) or any PostgreSQL provider. If you use [Neon](https://neon.tech/), create a free account, and create a new database.
+  Create an account, click on "New project", give it a name in the "Project name", and choose AWS Europe Central 1 (Frankfurt).
+  After that, click the "Dashboard" button on the left side in the top, click and the "Connection string" box and copy the Connection String. It looks like the example.
   - Example:  
     ```
     postgresql://<user>:<password>@<host>/neondb?sslmode=require
@@ -47,7 +49,7 @@ Follow these steps to get the pipeline running in **less than 2 minutes**. You w
 - Open your computer's terminal (called Terminal on macOS/Linux, or Command Prompt / PowerShell on Windows) and paste these commands: 
 ```sh
 # 1. Download the code from GitHub to your computer
-git clone <your-github-repository-url>
+git clone <the-github-repository-url>
 
 # 2. Move your terminal focus inside the project folder
 cd RAG_PROJECT
@@ -57,7 +59,9 @@ cd RAG_PROJECT
 
 ### 3. Set Up a Virtual Environment
 
-- To make sure this project doesn't conflict with any other software on your machine, we create a secure, isolated sandbox folder called venv. Paste the command matching your system:
+- To make sure this project doesn't conflict with any other software on your machine, we create a secure, isolated sandbox folder called venv. Paste the command matching your 
+system:
+
 **macOS / Linux:**
 ```sh
 python -m venv venv
@@ -111,6 +115,15 @@ copy .env.example .env
 ```sh
 Copy-Item .env.example .env
 ```
+
+- Can't see or open the `.env` file? Because files starting with a dot (`.`) are hidden by default on macOS and Linux, you might not see the file in your standard folder view. 
+
+* **On macOS / Linux:** Run `open -e .env` (This opens it instantly in the built-in TextEdit app).
+
+* **On Windows:** Run `notepad .env` (This opens it instantly in the built-in Notepad app).
+
+*Alternatively, you can always open VS Code manually, click on the **File Explorer** tab on the left sidebar, and click directly on the `.env` file to edit it!*
+
 Paste your keys: Open the newly created `.env` file with any basic text editor (like Notepad or VS Code) and replace the text with your actual keys:
 
 ```
@@ -145,12 +158,17 @@ You are ready! The tool will automatically log into your database, set up the re
   python index_documents.py --file tests/test_2_config.pdf --strategy "paragraph-based splitting"
   ```
 
-- **D. Process a Word Document by splitting it into clean sentences:**
+- **D. Process a PDF Document by splitting it into clean sentences:**
+  ```sh
+python index_documents.py --file tests/test_1_prose.pdf --strategy "sentence-based splitting"
+  ```
+
+- **E. Process a Word Document by splitting it into clean sentences:**
   ```sh
   python index_documents.py --file tests/test_4_edge_cases.docx --strategy "sentence-based splitting"
   ```
 
-- **E. Process a file using a fixed character window (150 characters per chunk):**
+- **F. Process a file using a fixed character window (150 characters per chunk):**
   ```sh
   python index_documents.py --file tests/test_1_prose.pdf --strategy "fixed-size with overlap" --chunk-size 150 --overlap 30
   ```
@@ -169,14 +187,25 @@ GROUP BY filename, split_strategy
 ORDER BY filename ASC;
 ```
 
-**Inspect sentence boundaries:**
+**Inspect the FULL table layout (Including Vectors) for a specific run** 
+
+Let's say that you recently executed this exact command:
+```sh
+python index_documents.py --file tests/test_1_prose.pdf --strategy "sentence-based splitting"
+```
+You can fetch every single column—including the text, metadata, and the raw mathematical AI vectors—by running this query:
 ```sql
-SELECT id, filename, split_strategy, chunk_text 
+SELECT id, chunk_text, embedding, filename, split_strategy, created_at
 FROM document_chunks 
-WHERE filename = 'test_4_edge_cases.docx'
+WHERE filename LIKE 'test_1_prose.pdf' AND split_strategy = 'sentence-based splitting'
 ORDER BY id ASC;
 ```
+What will you see in the results?
 
+- id: The auto-incrementing unique identifier for that specific text block.
+- chunk_text: The cleaned, raw text snippet pulled from the PDF sentence.
+- embedding: This is where the magic happens! You will see a large array of 768 decimal numbers (e.g., [0.01234, -0.05678, 0.11223...]). This is the raw directional vector generated by Google's Gemini API that represents the semantic meaning of your text inside the database.
+- filename & split_strategy: Keeping track of exactly where this chunk came from and how it was processed.
 ---
 
 ## 🛠️ CLI Reference
