@@ -49,7 +49,7 @@ Follow these steps to get the pipeline running in **less than 2 minutes**. You w
 - Open your computer's terminal (called Terminal on macOS/Linux, or Command Prompt / PowerShell on Windows) and paste these commands: 
 ```sh
 # 1. Download the code from GitHub to your computer
-git clone <the-github-repository-url>
+git clone https://github.com/NoamHasson1/rag_project.git
 
 # 2. Move your terminal focus inside the project folder
 cd RAG_PROJECT
