@@ -326,4 +326,3 @@ tests/
 ```
 
 - All test documents and test-related files are now located in the `tests/` directory.
-```
