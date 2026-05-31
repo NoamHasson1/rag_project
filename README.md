@@ -69,12 +69,26 @@ cd RAG_PROJECT
 
 ### 3. Set Up a Virtual Environment
 
+**CRITICAL FOR macOS USERS:** Google Gemini API frameworks strictly require **Python 3.10 or higher**. Before creating the environment, verify your active terminal environment version:
+```sh
+python3 --version
+```
+If this returns Python 3.9 or lower, please update your Python runtime via Python.org or Homebrew before continuing.
+
 - To make sure this project doesn't conflict with any other software on your machine, we create a secure, isolated sandbox folder called venv. Paste the command matching your 
 system:
 
 **macOS / Linux:**
 ```sh
 python -m venv venv
+source venv/bin/activate
+```
+
+if didn't work - 
+
+**macOS / Linux:**
+```sh
+python3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -248,7 +262,24 @@ What will you see in the results?
 1. Database Error - Ensure your `POSTGRES_URL` is correct and the database user has permission to create extensions.
 2. Gemini API Error [403] API key not valid - Ensure your .env file name starts with a dot (.env), has no trailing spaces around the equals sign, and that your API key is active.
 3. Vector Dimension Mismatch: psycopg2.errors.InvalidParameterValue: ERROR: vector dimensions must be 768 - This happens if you change the embedding model inside the code script to a different model version while the database table structure was initialized with a strict VECTOR(768) layout constraint.
-
+4. * **The Error:** Running `pip install -r requirements.txt` crashes with an explicit error message stating that it cannot find or satisfy the requirement for `anyio` or other dependencies. 
+1. Install a modern package version (Python `3.11` or `3.12`).
+2. Kill the outdated environment wrapper completely:
+     ```sh
+     rm -rf venv
+     ```
+3. Rebuild the environment specifying your updated runtime instance:
+     ```sh
+     python3.11 -m venv venv
+     # or python3.12 -m venv venv based on your installation
+     ```
+4. Activate and trigger execution setup safely:
+     ```sh
+     source venv/bin/activate
+     python -m pip install --upgrade pip
+     pip install -r requirements.txt
+     ```
+  
 ## Technical Specifications
 
 * **AI Embedding Model:** `gemini-embedding-2`.
