@@ -207,8 +207,9 @@ Database connection closed gracefully.
   ```
 
 - **D. Process a PDF Document by splitting it into clean sentences:**
-  ```sh
-python index_documents.py --file tests/test_1_prose.pdf --strategy "sentence-based splitting"
+
+```sh
+  python index_documents.py --file tests/test_1_prose.pdf --strategy "sentence-based splitting"
   ```
 
 - **E. Process a Word Document by splitting it into clean sentences:**
